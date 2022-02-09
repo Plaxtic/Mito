@@ -8,6 +8,8 @@ deleto will deleto the filename you pass it (no matter the owner) from
 this and all higher directories  
 all the others will copy themselves into all higher directories
 
+requires nasm
+
 to try them out:
 ```
 ./build
@@ -16,4 +18,6 @@ mkdir -p 1/{1..2}/{1..3}/{1..4}/{1..5}
 ./zito
 tree
 ```
+x86 source is in aito, C source in cito
 
+pseud.sh prints out my pseudo-C annotations of the assembly source
