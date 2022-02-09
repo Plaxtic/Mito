@@ -6,11 +6,11 @@ Experiments with self replicating programs
 
 deleto will deleto the filename you pass it (no matter the owner) from 
 this and all higher directories  
-all the others will copy themselves into all higher directories
+All the others will copy themselves into all higher directories
 
-requires nasm
+Requires nasm
 
-to try them out:
+To try them out:
 ```
 ./build
 cp bin/zito .

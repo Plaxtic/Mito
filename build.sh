@@ -1,7 +1,7 @@
 #!/bin/sh -e
 
 ## build nasm source
-for x in aito/*.asm
+for x in aito/*o.asm
 do
     BASE=`basename "$x" .asm`
 
@@ -18,6 +18,6 @@ do
 done
 
 ## build 32 bit sito
-nasm aito/sito32.S -o bin/sito32
+nasm aito/sito32.asm -o bin/sito32
 chmod +x bin/sito32
 echo sito32
