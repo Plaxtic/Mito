@@ -8,7 +8,7 @@ BITS 32
 ; no padding, 360 bytes on my system ($ nasm sito32.asm)
 ; does not need to be memory mapped 
 ; knows all its own addressees
-; can copy itself with directly by measuring its own size
+; can copy itself directly by measuring its own size
 ; uses recursion to scan the directories
 ; still not the fastest, but least syscalls  
 ; 
