@@ -11,9 +11,9 @@ all the others will copy themselves into all higher directories
 to try them out:
 ```
 ./build
-cp bin/mito .
+cp bin/zito .
 mkdir -p 1/{1..2}/{1..3}/{1..4}/{1..5}
-./mito
+./zito
 tree
 ```
 
